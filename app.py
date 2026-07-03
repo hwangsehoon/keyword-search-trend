@@ -181,10 +181,10 @@ with st.sidebar:
     st.markdown('<div class="brand">LINKPORT</div>', unsafe_allow_html=True)
     st.markdown('<div class="brand-sub">KEYWORD SEARCH TREND</div>', unsafe_allow_html=True)
     with st.form("search_form", border=False):
-        kw_text = st.text_area("키워드 (쉼표 또는 줄바꿈으로 구분, 최대 5개)", value="",
-                               placeholder="예: 마카, 아르기닌, 홍삼", height=120)
+        kw_text = st.text_input("키워드 (쉼표로 구분, 최대 5개)", value="",
+                                placeholder="예: 마카, 아르기닌, 홍삼")
         go_btn = st.form_submit_button("조회하기", type="primary", use_container_width=True)
-        st.caption("Ctrl+Enter 로도 조회됩니다")
+        st.caption("Enter 로 조회됩니다")
     st.markdown('<div class="subtle" style="margin-top:1.2rem;">데이터 · 네이버 검색광고 × 데이터랩<br>'
                 f'{dt.date.today():%Y년 %m월 %d일} 기준</div>', unsafe_allow_html=True)
 
