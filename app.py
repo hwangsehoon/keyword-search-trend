@@ -39,9 +39,18 @@ span:not([data-testid="stIconMaterial"]) {
 /* 다크 사이드바 */
 section[data-testid="stSidebar"] > div:first-child { background: #2D2B28 !important; }
 section[data-testid="stSidebar"] * { color: #E8E4DE !important; }
+/* 검색 입력창 — 흰 바탕 + 진한 글자로 잘 보이게 */
+section[data-testid="stSidebar"] [data-baseweb="input"],
+section[data-testid="stSidebar"] [data-baseweb="base-input"],
+section[data-testid="stSidebar"] input,
 section[data-testid="stSidebar"] textarea {
-    background: #3D3B38 !important; color: #E8E4DE !important;
-    border: 1px solid #4A4745 !important; border-radius: 8px !important;
+    background: #FFFFFF !important; color: #2D2B28 !important;
+    -webkit-text-fill-color: #2D2B28 !important;
+    border: 1px solid #C9C3BA !important; border-radius: 8px !important;
+}
+section[data-testid="stSidebar"] input::placeholder,
+section[data-testid="stSidebar"] textarea::placeholder {
+    color: #9A948C !important; -webkit-text-fill-color: #9A948C !important;
 }
 section[data-testid="stSidebar"] hr { border-color: #4A4745 !important; }
 .brand { letter-spacing:.28em; font-weight:700; font-size:1.25rem; color:#E8E4DE; margin:.2rem 0 0; }
