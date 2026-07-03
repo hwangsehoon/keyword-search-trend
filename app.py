@@ -81,7 +81,20 @@ h1 { color:#2D2B28 !important; font-weight:700 !important; font-size:1.8rem !imp
 
 .stPlotlyChart { background:#FFFFFF; border:1px solid #E8E4DE; border-radius:12px; padding:8px; }
 [data-testid="stExpander"] { border:1px solid #E8E4DE; border-radius:10px; background:#FFFFFF; }
+/* 데이터 표 제목(익스팬더 헤더) 굵게 */
+[data-testid="stExpander"] summary { font-weight:700 !important; }
+[data-testid="stExpander"] summary p { font-weight:700 !important; color:#2D2B28 !important; font-size:1rem !important; }
 hr { border-color:#E8E4DE !important; }
+
+/* 사이드바 form 제출 버튼 = 테라코타 (Ctrl+Enter 조회용) */
+[data-testid="stSidebar"] [data-testid="stForm"] { border:none; padding:0; }
+[data-testid="stSidebar"] [data-testid="stFormSubmitButton"] button {
+    background:#D97757 !important; color:#fff !important; border:none !important;
+    font-weight:600 !important; border-radius:8px !important;
+}
+[data-testid="stSidebar"] [data-testid="stFormSubmitButton"] button:hover {
+    background:#C4694D !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -167,9 +180,11 @@ if not _check_password():
 with st.sidebar:
     st.markdown('<div class="brand">LINKPORT</div>', unsafe_allow_html=True)
     st.markdown('<div class="brand-sub">KEYWORD SEARCH TREND</div>', unsafe_allow_html=True)
-    kw_text = st.text_area("키워드 (쉼표 또는 줄바꿈으로 구분, 최대 5개)", value="",
-                           placeholder="예: 마카, 아르기닌, 홍삼", height=120)
-    go_btn = st.button("조회하기", type="primary", use_container_width=True)
+    with st.form("search_form", border=False):
+        kw_text = st.text_area("키워드 (쉼표 또는 줄바꿈으로 구분, 최대 5개)", value="",
+                               placeholder="예: 마카, 아르기닌, 홍삼", height=120)
+        go_btn = st.form_submit_button("조회하기", type="primary", use_container_width=True)
+        st.caption("Ctrl+Enter 로도 조회됩니다")
     st.markdown('<div class="subtle" style="margin-top:1.2rem;">데이터 · 네이버 검색광고 × 데이터랩<br>'
                 f'{dt.date.today():%Y년 %m월 %d일} 기준</div>', unsafe_allow_html=True)
 
@@ -278,12 +293,20 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
 # 표 + CSV
-with st.expander("데이터 표 / CSV 다운로드"):
+with st.expander("데이터 표 / 일자별 검색량", expanded=True):
     pivot = agg.pivot_table(index="date", columns="keyword", values="volume").reset_index()
     fmt = "%Y" if unit == "연간" else ("%Y-%m" if unit == "월간" else "%Y-%m-%d")
     pivot["date"] = pd.to_datetime(pivot["date"]).dt.strftime(fmt)
     pivot = pivot.rename(columns={"date": "날짜"})
     pivot.columns.name = None
-    st.dataframe(pivot, use_container_width=True, hide_index=True)
+    num_cols = [c for c in pivot.columns if c != "날짜"]
+    pivot[num_cols] = pivot[num_cols].fillna(0).round().astype(int)
+
+    def _zebra(row):
+        bg = "#F1EDE6" if row.name % 2 else "#FFFFFF"   # 진/연 교차
+        return [f"background-color: {bg}; color: #2D2B28"] * len(row)
+
+    styled = pivot.style.apply(_zebra, axis=1).format({c: "{:,}" for c in num_cols})
+    st.dataframe(styled, use_container_width=True, hide_index=True)
     st.download_button("CSV 다운로드", pivot.to_csv(index=False).encode("utf-8-sig"),
                        file_name=f"volume_{unit}.csv", mime="text/csv")
