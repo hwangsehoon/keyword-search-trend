@@ -1,0 +1,12 @@
+# 절대 커밋 금지 — 네이버 API 키
+.streamlit/secrets.toml
+
+# 파이썬
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 산출물
+*.csv
+volume_*.csv
