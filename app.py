@@ -304,8 +304,10 @@ st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 # 표 + CSV
 with st.expander("데이터 표 / 일자별 검색량", expanded=True):
     pivot = agg.pivot_table(index="date", columns="keyword", values="volume").reset_index()
+    pivot["date"] = pd.to_datetime(pivot["date"])
+    pivot = pivot.sort_values("date", ascending=False).reset_index(drop=True)  # 최신 날짜부터
     fmt = "%Y" if unit == "연간" else ("%Y-%m" if unit == "월간" else "%Y-%m-%d")
-    pivot["date"] = pd.to_datetime(pivot["date"]).dt.strftime(fmt)
+    pivot["date"] = pivot["date"].dt.strftime(fmt)
     pivot = pivot.rename(columns={"date": "날짜"})
     pivot.columns.name = None
     num_cols = [c for c in pivot.columns if c != "날짜"]
